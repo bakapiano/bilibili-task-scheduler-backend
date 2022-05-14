@@ -1,0 +1,6 @@
+# 每个用户拥有的最大任务数量
+MAX_TASKS_PER_USER = 10
+# 任务执行最小间隔
+MIN_INTERVAL_SECONDS = 10
+# 任务最长持续时间
+MAX_DURATION_SECONDS = 60*60*12

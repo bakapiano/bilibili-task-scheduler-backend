@@ -1,0 +1,15 @@
+aiohttp==3.8.1
+fastapi==0.77.1
+qrcode==7.3.1
+Pillow==9.1.0
+uvicorn==0.17.6
+python-jose[cryptography]
+databases[postgresql]~=0.5.5
+alembic==1.7.7
+starlette~=0.19.1
+pydantic~=1.9.0
+sqlalchemy~=1.4.36
+# celery
+psycopg2==2.9.3
+redis==3.5.3
+celery==4.4.7

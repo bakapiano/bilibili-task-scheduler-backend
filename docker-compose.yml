@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+
+  web:
+    build: ./backend
+    command: |
+      bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn backend.main:app --reload --workers 1 --host 0.0.0.0 --port 8000'
+    volumes:
+      - ./:/usr/app/
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_URL=postgresql://fastapi:fastapi@db/fastapi
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=fastapi
+      - POSTGRES_PASSWORD=fastapi
+      - POSTGRES_DB=fastapi
+
+  worker:
+    build: ./backend
+    command: celery worker --app=backend.celery.worker.celery --loglevel=info
+    volumes:
+      - ./:/usr/app
+    environment:
+      - DATABASE_URL=postgresql://fastapi:fastapi@db/fastapi
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - web
+      - redis
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+
+volumes:
+  postgres_data:

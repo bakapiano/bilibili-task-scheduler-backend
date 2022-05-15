@@ -24,4 +24,8 @@ RUN set -eux \
     && rm -rf /root/.cache/pip
 
 # copy project
+<<<<<<< HEAD:Dockerfile
 COPY ./ /usr/app/
+=======
+COPY . /usr/app/
+>>>>>>> 1c949b701be4bfe00aa360eb5d0aadf3678526ca:Dockerfile

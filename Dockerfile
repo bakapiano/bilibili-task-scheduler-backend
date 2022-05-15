@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # copy requirements file
-COPY requirements.txt /usr/app/requirements.txt
+COPY ./backend/requirements.txt /usr/app/requirements.txt
 
 # alpine apk 换源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
@@ -24,4 +24,4 @@ RUN set -eux \
     && rm -rf /root/.cache/pip
 
 # copy project
-COPY .. /usr/app/
+COPY ./ /usr/app/

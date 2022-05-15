@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   web:
-    build: ./backend
+    build: ./
     command: |
       bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn backend.main:app --reload --workers 1 --host 0.0.0.0 --port 8000'
     volumes:
@@ -22,14 +22,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
-      - 5432:5432
+      - 15432:15432
     environment:
       - POSTGRES_USER=fastapi
       - POSTGRES_PASSWORD=fastapi
       - POSTGRES_DB=fastapi
 
   worker:
-    build: ./backend
+    build: ./
     command: celery worker --app=backend.celery.worker.celery --loglevel=info
     volumes:
       - ./:/usr/app

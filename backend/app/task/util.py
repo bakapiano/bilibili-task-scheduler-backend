@@ -40,12 +40,17 @@ async def parse_url(url: str) -> dict:
 
         # 直播间独轮车
         if "live.bilibili.com" == parse_result.netloc:
-            room_id = parse_result.path.split("/")[-1]
+            # room_id = parse_result.path.split("/")[-1]
 
             async with session.get(url) as response:
                 text = await response.text()
+
+                pattern = re.compile(r'"room_id":([0-9]*?),')
+                room_id = pattern.findall(text)[0]
+
                 pattern = re.compile(r'"title":"(.*?)","cover":')
                 live_room_name = pattern.findall(text)[0]
+
                 pattern = re.compile(r'{"base_info":{"uname":"(.*?)","face"')
                 live_room_owner = pattern.findall(text)[0]
                 title = f"{live_room_owner}-{live_room_name}"
@@ -58,7 +63,7 @@ async def parse_url(url: str) -> dict:
             }
 
         # 视频评论区
-        elif (parse_result.netloc == "www.bilibili.com" or parse_result.netloc == "m.bilibili.com")\
+        elif (parse_result.netloc == "www.bilibili.com" or parse_result.netloc == "m.bilibili.com") \
                 and "video" in parse_result.path:
             video_bv = parse_result.path.split("/")[-1]
 
@@ -115,5 +120,7 @@ if __name__ == "__main__":
         # parse_url("https://www.bilibili.com/video/BV19Z4y1k7P7?spm_id_from=333.999.0.0"),
         parse_url("https://www.bilibili.com/video/BV1kL411K7wV?spm_id_from=333.999.0.0"),
         parse_url("https://live.bilibili.com/22625025?broadcast_type=0&is_room_feed=1&spm_id_from=333.999.0.0"),
+        parse_url("https://live.bilibili.com/605?hotRank=0&session_id=02165bef96d7dee1195133b06d8d4d08_8DE40BB8-22DD-436F-B3B7-6F858841A7B5&visit_id=409t8kymixy0"),
+        parse_url("https://live.bilibili.com/10413051?hotRank=0&session_id=0597eddb708715b3c356498c0cc6ea88_1F4BF8DE-9B68-4C5C-8473-C51C84344EFE&visit_id=16h6692kmfsw"),
     ]))
     print(result)

@@ -18,6 +18,7 @@ from backend.app.task.model import tasks
 from backend.app.task.schema import BiliTaskSchema, TaskStatus, BiliTaskPostSchema
 from backend.app.task.util import parse_url
 from backend.celery.worker import create_bili_task
+from backend.lib.crawler import test_cookie_jar
 
 task_router = APIRouter()
 
@@ -59,6 +60,10 @@ async def create_new_task(
     if count >= MAX_TASKS_PER_USER:
         raise HTTPException(detail=f"任务上限 {MAX_TASKS_PER_USER} 个", status_code=status.HTTP_400_BAD_REQUEST)
 
+    # 检查 cookie 是否过期
+    if not await test_cookie_jar(token_data.cookie_jar):
+        raise HTTPException(detail="登录已过期", status_code=status.HTTP_401_UNAUTHORIZED)
+
     args_dict: dict = await parse_url(task.url)
 
     task_id = await database.execute(tasks.insert().values({
@@ -67,7 +72,9 @@ async def create_new_task(
         "status": TaskStatus.schedule,
         "task_type": args_dict.get("task_type"),
         **task.dict(),
-        "key": args_dict.get("key")
+        "key": args_dict.get("key"),
+        "success_count": 0,
+        "total_count": 0,
     }).returning(tasks.c.id))
 
     task_info = BiliTaskSchema(**await database.fetch_one(tasks.select().filter_by(id=task_id)))

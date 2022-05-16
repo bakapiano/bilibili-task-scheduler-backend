@@ -39,3 +39,7 @@ class BiliTaskSchema(BiliTaskPostSchema):
     task_type: TaskType
     # room_id / comment_id
     key: str = Field(..., min_length=1, max_length=32)
+    # 成功次数
+    success_count: int
+    # 尝试次数
+    total_count: int
